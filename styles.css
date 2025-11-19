@@ -28,7 +28,7 @@ button:hover {
   background-color: gray;
   box-shadow: 5px 5px 5px rgb(46, 46, 46);
   padding: 20px;
-  height: 460px;
+  min-height: 460px;
   width: 300px;
   margin-top: 30px;
 }
@@ -39,9 +39,9 @@ button:hover {
   border-radius: 5px;
   box-shadow: 2px 2px 2px 2px  ;
   font-size: 32px;
-  padding: 12px;
+  padding: 12px 8px;
   text-align: end;
-  height: 64px;
+  min-height: 64px;
 }
 
 .calculator__buttons {

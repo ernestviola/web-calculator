@@ -1,10 +1,15 @@
-const numbers = document.querySelectorAll('.calculator__button__number');
-numbers.forEach((number) => {
-  number.addEventListner('click',)
+const numberButtons = document.querySelectorAll('.calculator__button__number');
+numberButtons.forEach((number) => {
+  number.addEventListener('click',(event) => {
+    insertNumber(event.target.value)
+  })
 })
 
-function insertNumber() {
-  const 
+function insertNumber(num) {
+  const calculatorDisplay = document.querySelector('.calculator__display');
+  if (calculatorDisplay.textContent.length > 8) 
+    return;
+  calculatorDisplay.textContent += num;
 }
 
 function add(a,b) {
