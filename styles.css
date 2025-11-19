@@ -97,3 +97,7 @@ button:hover {
 .calculator__button__plus {
   flex-basis: 80px !important;
 }
+
+.highlight {
+  border-color: gold;
+}
