@@ -1,3 +1,12 @@
+const numbers = document.querySelectorAll('.calculator__button__number');
+numbers.forEach((number) => {
+  number.addEventListner('click',)
+})
+
+function insertNumber() {
+  const 
+}
+
 function add(a,b) {
   return a+b;
 }
