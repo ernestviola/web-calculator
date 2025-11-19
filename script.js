@@ -33,6 +33,11 @@ function pressNumber(num) {
   if (lastButton == 'operator') {
     clearDisplay();
   }
+
+  if (lastButton == 'evaluate') {
+    clearAll();
+  }
+
   if (calculatorDisplay.textContent.length > 8) 
     return;
 
@@ -41,11 +46,12 @@ function pressNumber(num) {
 
   updateDisplay(newDisplay);
   lastButton = 'number';
+  logVars();
 }
 
 function pressOperator(operatorButton) {
   operatorButton.addEventListener('click', (event) => {
-    if (!current) return;
+    if (current == null) return;
     if (lastButton == 'operator') {
       clearOperators();
     }
@@ -86,21 +92,34 @@ function clearOperators() {
   operator = null;
 }
 
-function evaluate() {
-  if (operator && memory && current) {
-    let results = operate(operator,memory,current);
-    updateDisplay(results);
-    clearOperators();
-    memory = null;
-    operator = null;
-  }
-  
-}
-
 function clearAll() {
   clearOperators();
   clearDisplay();
   operator = memory = current = lastButton = null;
+}
+
+function evaluate() {
+  console.log(memory === null)
+  if (operator !== null && memory !== null && current !== null) {
+    if (operator == '/' && current == 0) {
+      // divide by 0
+      const display = document.querySelector('.calculator__display');
+      display.textContent = 'ERROR';  
+      setTimeout(() => {
+        clearAll();
+      }, 500);
+      
+      
+    } else {
+      let results = operate(operator,memory,current);
+      updateDisplay(results);
+      clearOperators();
+      memory = null;
+      operator = null;
+      lastButton = 'evaluate';
+    }
+    
+  }
 }
 
 function logVars() {
@@ -129,7 +148,8 @@ function divide(a,b) {
 
 function limit(results) {
   if (results > 999999999) return 999999999;
-  if (results.toString().length >= 8 && results > 1) {
+  if (results < -99999999) return -99999999;
+  if (results.toString().length >= 8 && (results > 1 && results > -1)) {
     return parseFloat(results.toFixed(0));
   }
   return parseFloat(results.toFixed(8));
