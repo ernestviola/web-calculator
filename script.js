@@ -1,51 +1,64 @@
-/* 
-pseudocode
-
-insert numbers into a variable called current that is displayed
-- if the operator flag contains a symbol then move current into memory 
-  and clear the operator
-
-given an operator do something, then store the operator in the operator flag
-- if nothing in memory then store current in memory
-- if memory contains a number 
-  1. operate on memory and current
-  2. clear memory and return the value into current
-*/
-let memory;
-let current;
-let operator;
+let memory = null;
+let current = null;
+let operator = null;
+let lastButton = null;
 
 const numberButtons = document.querySelectorAll('.calculator__button__number');
 numberButtons.forEach((numberButton) => {
   numberButton.addEventListener('click',(event) => {
     pressNumber(event.target.value)
   })
-})
+});
 
 const operatorButtons = document.querySelectorAll('.calculator__button__operator')
-operatorButtons.forEach((operatorButton) => pressOperator(operatorButton))
+operatorButtons.forEach((operatorButton) => pressOperator(operatorButton));
 
 const deleteButton = document.querySelector('.calculator__delete');
 deleteButton.addEventListener('click', () => {
   deleteNumber();
 });
 
+const clearButton = document.querySelector('.calculator__clear');
+clearButton.addEventListener('click', () => {
+  clearAll();
+});
+
+const equalButton = document.querySelector('.calculator__button__equal')
+equalButton.addEventListener('click',() => {
+  evaluate();
+});
 
 function pressNumber(num) {
   const calculatorDisplay = document.querySelector('.calculator__display');
+  if (lastButton == 'operator') {
+    clearDisplay();
+  }
   if (calculatorDisplay.textContent.length > 8) 
     return;
+
   let newDisplay = calculatorDisplay.textContent + num;
+  if (isNaN(newDisplay)) return;
+
   updateDisplay(newDisplay);
+  lastButton = 'number';
 }
 
 function pressOperator(operatorButton) {
   operatorButton.addEventListener('click', (event) => {
     if (!current) return;
-    const operatorButtons = document.querySelectorAll('.calculator__button__operator')
-    operatorButtons.forEach((op) => op.classList.remove('highlight'));
+    if (lastButton == 'operator') {
+      clearOperators();
+    }
+    if (memory && operator && current) {
+      // evaluate
+      evaluate();
+    }
     operator = event.target.value
     event.target.classList.add('highlight');
+    // copy current into memory so that way can perform some arthimetic on it
+    memory = current;
+    current = null;
+    lastButton = 'operator';
   })
 }
 
@@ -56,25 +69,70 @@ function deleteNumber() {
 }
 
 function updateDisplay(num) {
-  const display = document.querySelector('.calculator__display')
+  const display = document.querySelector('.calculator__display');
   display.textContent = num;
-  current = Number(num);
+  current = num ? Number(num) : null;
+}
+
+function clearDisplay() {
+  const display = document.querySelector('.calculator__display')
+  display.textContent = '';
+  current = null;
+}
+
+function clearOperators() {
+  const operatorButtons = document.querySelectorAll('.calculator__button__operator')
+  operatorButtons.forEach((op) => op.classList.remove('highlight'));
+  operator = null;
+}
+
+function evaluate() {
+  if (operator && memory && current) {
+    let results = operate(operator,memory,current);
+    updateDisplay(results);
+    clearOperators();
+    memory = null;
+    operator = null;
+  }
+  
+}
+
+function clearAll() {
+  clearOperators();
+  clearDisplay();
+  operator = memory = current = lastButton = null;
+}
+
+function logVars() {
+  console.table({memory,operator,current,lastButton});
 }
 
 function add(a,b) {
-  return a+b;
+  let results = a + b;
+  return limit(results);
 }
 
 function subtract(a,b) {
-  return a-b;
+  let results = a-b;
+  return limit(results);
 }
 
 function multiply(a,b) {
-  return a*b;
+  let results = a*b;
+  return limit(results);
 }
 
 function divide(a,b) {
-  return a/b;
+  let results = a/b;
+  return limit(results);
+}
+
+function limit(results) {
+  if (results > 999999999) return 999999999;
+  if (results.toString().length >= 8 && results > 1) {
+    return parseFloat(results.toFixed(0));
+  }
+  return parseFloat(results.toFixed(8));
 }
 
 function operate(sign,a,b) {
